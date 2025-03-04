@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BodaBox Terminal</title>
+    <style>
+        body {
+            background-color: #300a24;
+            color: #ffffff;
+            font-family: 'Ubuntu Mono', monospace;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .terminal {
+            width: 80%;
+            height: 70%;
+            background-color: rgba(0, 0, 0, 0.7);
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        
+        .terminal-header {
+            display: flex;
+            align-items: center;
+            padding: 10px 20px;
+            background-color: rgba(0, 0, 0, 0.8);
+            border-radius: 8px 8px 0 0;
+            border-bottom: 1px solid #333;
+        }
+        
+        .terminal-button {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+        
+        .close {
+            background-color: #ff5f57;
+        }
+        
+        .minimize {
+            background-color: #ffbd2e;
+        }
+        
+        .maximize {
+            background-color: #28ca41;
+        }
+        
+        .terminal-title {
+            margin-left: 10px;
+            font-size: 14px;
+            color: #ccc;
+        }
+        
+        .terminal-content {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            line-height: 1.5;
+        }
+        
+        .prompt {
+            color: #4e9a06;
+        }
+        
+        .user {
+            color: #729fcf;
+        }
+        
+        .hostname {
+            color: #3465a4;
+        }
+        
+        .directory {
+            color: #ef2929;
+        }
+        
+        .input-line {
+            display: flex;
+            margin: 5px 0;
+        }
+        
+        #user-input {
+            background: transparent;
+            border: none;
+            color: #ffffff;
+            font-family: 'Ubuntu Mono', monospace;
+            font-size: inherit;
+            outline: none;
+            width: 100%;
+            margin-left: 5px;
+        }
+        
+        .ascii-art {
+            font-family: monospace;
+            white-space: pre;
+            line-height: 1.2;
+            color: #4e9a06;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="terminal">
+        <div class="terminal-header">
+            <div class="terminal-button close"></div>
+            <div class="terminal-button minimize"></div>
+            <div class="terminal-button maximize"></div>
+            <div class="terminal-title">root@bodabox: ~</div>
+        </div>
+        <div class="terminal-content" id="terminal-content">
+        </div>
+    </div>
+
+    <script>
+        const terminalContent = document.getElementById('terminal-content');
+        
+
+        function initTerminal() {
+
+            terminalContent.innerHTML = '';
+            
+
+            const asciiArt = document.createElement('div');
+            asciiArt.classList.add('ascii-art');
+            asciiArt.innerHTML = ` ███████████               █████           ███████████                      
+░░███░░░░░███             ░░███           ░░███░░░░░███                     
+ ░███    ░███  ██████   ███████   ██████   ░███    ░███  ██████  █████ █████
+ ░██████████  ███░░███ ███░░███  ░░░░░███  ░██████████  ███░░███░░███ ░░███ 
+ ░███░░░░░███░███ ░███░███ ░███   ███████  ░███░░░░░███░███ ░███ ░░░█████░  
+ ░███    ░███░███ ░███░███ ░███  ███░░███  ░███    ░███░███ ░███  ███░░░███ 
+ ███████████ ░░██████ ░░████████░░████████ ███████████ ░░██████  █████ █████
+░░░░░░░░░░░   ░░░░░░   ░░░░░░░░  ░░░░░░░░ ░░░░░░░░░░░   ░░░░░░  ░░░░░ ░░░░░`;
+            terminalContent.appendChild(asciiArt);
+            
+            // Add welcome messages
+            addMessage('Welcome to BodaBox Terminal - Media Server');
+            addMessage('System version 1.0.0 | ' + new Date().toDateString());
+            addMessage('Type \'help\' to see available commands.');
+            
+
+            addPromptLine();
+        }
+        
+        function addMessage(message) {
+            const div = document.createElement('div');
+            div.innerHTML = message;
+            terminalContent.appendChild(div);
+            terminalContent.scrollTop = terminalContent.scrollHeight;
+            return div;
+        }
+        
+        function addPromptLine() {
+            const inputLine = document.createElement('div');
+            inputLine.classList.add('input-line');
+            
+            const promptSpan = document.createElement('span');
+            promptSpan.classList.add('prompt');
+            promptSpan.innerHTML = '<span class="user">root</span>@<span class="hostname">bodabox</span>:<span class="directory">~</span>#';
+            
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.id = 'user-input';
+            input.autocomplete = 'off';
+            
+            inputLine.appendChild(promptSpan);
+            inputLine.appendChild(input);
+            terminalContent.appendChild(inputLine);
+            
+            input.focus();
+            
+            input.addEventListener('keydown', handleCommand);
+            
+            terminalContent.scrollTop = terminalContent.scrollHeight;
+        }
+        
+        function handleCommand(event) {
+            if (event.key === 'Enter') {
+                const input = event.target;
+                const command = input.value;
+                const inputLine = input.parentNode;
+                
+                input.removeEventListener('keydown', handleCommand);
+                
+                input.disabled = true;
+                
+                const commandLine = document.createElement('div');
+                commandLine.innerHTML = inputLine.querySelector('.prompt').outerHTML + ' ' + command;
+                terminalContent.replaceChild(commandLine, inputLine);
+                
+                processCommand(command);
+                
+                addPromptLine();
+            }
+        }
+        
+        // Process the command and show output
+        function processCommand(command) {
+            let commandLower = command.trim().toLowerCase();
+            let output = '';
+            
+            if (commandLower === 'help') {
+                output = `
+                    Available commands:<br>
+                    - help: Show this help message<br>
+                    - about: About BodaBox<br>
+                    - clear: Clear the terminal<br>
+                    - date: Show current date<br>
+                    - and other undocumented commands<br>
+                `;
+            }
+            else if (commandLower === 'about') {
+                output = 'BodaBox - A coming soon Plex/Jellyfin media server';
+            }
+            else if (commandLower === 'clear') {
+                initTerminal();
+                return;
+            }
+            else if (commandLower === 'date') {
+                output = new Date().toString();
+            }
+            else if (commandLower.includes('boda')) {
+                output = 'É o caralho que te foda!';
+            }
+            else if (commandLower === '') {
+                return;
+            }
+            else {
+                output = `Command not found: ${command}`;
+            }
+            
+            if (output) {
+                addMessage(output);
+            }
+        }
+        
+        window.onload = initTerminal;
+        
+        document.querySelector('.terminal-content').addEventListener('click', function() {
+            const input = document.getElementById('user-input');
+            if (input) {
+                input.focus();
+            }
+        });
+    </script>
+</body>
+</html>
