@@ -107,6 +107,8 @@
             line-height: 1.2;
             color: #4e9a06;
             margin-bottom: 10px;
+            display: block;
+            font-size: 12px;
         }
     </style>
 </head>
@@ -133,7 +135,7 @@
 
             const asciiArt = document.createElement('div');
             asciiArt.classList.add('ascii-art');
-            asciiArt.innerHTML = ` ███████████               █████           ███████████                      
+            asciiArt.innerHTML = `<pre> ███████████               █████           ███████████                      
 ░░███░░░░░███             ░░███           ░░███░░░░░███                     
  ░███    ░███  ██████   ███████   ██████   ░███    ░███  ██████  █████ █████
  ░██████████  ███░░███ ███░░███  ░░░░░███  ░██████████  ███░░███░░███ ░░███ 
@@ -143,7 +145,6 @@
 ░░░░░░░░░░░   ░░░░░░   ░░░░░░░░  ░░░░░░░░ ░░░░░░░░░░░   ░░░░░░  ░░░░░ ░░░░░`;
             terminalContent.appendChild(asciiArt);
             
-            // Add welcome messages
             addMessage('Welcome to BodaBox Terminal - Media Server');
             addMessage('System version 1.0.1 | ' + new Date().toDateString());
             addMessage('Type \'help\' to see available commands.');
@@ -204,7 +205,6 @@
             }
         }
         
-        // Process the command and show output
         function processCommand(command) {
             let commandLower = command.trim().toLowerCase();
             let output = '';
