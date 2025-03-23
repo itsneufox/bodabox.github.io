@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BodaBox Terminal - 404 Error</title>
+    <style>
+        body {
+            background-color: #300a24;
+            color: #ffffff;
+            font-family: 'Ubuntu Mono', monospace;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .terminal {
+            width: 80%;
+            height: 70%;
+            background-color: rgba(0, 0, 0, 0.7);
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        
+        .terminal-header {
+            display: flex;
+            align-items: center;
+            padding: 10px 20px;
+            background-color: rgba(0, 0, 0, 0.8);
+            border-radius: 8px 8px 0 0;
+            border-bottom: 1px solid #333;
+        }
+        
+        .terminal-button {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+        
+        .close {
+            background-color: #ff5f57;
+        }
+        
+        .minimize {
+            background-color: #ffbd2e;
+        }
+        
+        .maximize {
+            background-color: #28ca41;
+        }
+        
+        .terminal-title {
+            margin-left: 10px;
+            font-size: 14px;
+            color: #ccc;
+        }
+        
+        .terminal-content {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            line-height: 1.5;
+        }
+        
+        .error-line {
+            margin: 2px 0;
+        }
+        
+        .error-red {
+            color: #ff5f57;
+        }
+        
+        .error-yellow {
+            color: #ffbd2e;
+        }
+        
+        .error-green {
+            color: #4e9a06;
+        }
+        
+        .error-blue {
+            color: #729fcf;
+        }
+        
+        .countdown-line {
+            color: #ffbd2e;
+            margin: 2px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="terminal">
+        <div class="terminal-header">
+            <div class="terminal-button close"></div>
+            <div class="terminal-button minimize"></div>
+            <div class="terminal-button maximize"></div>
+            <div class="terminal-title">root@bodabox: ~/error</div>
+        </div>
+        <div class="terminal-content" id="terminal-content">
+            <!-- Error messages will be added here -->
+        </div>
+    </div>
+
+    <script>
+        const terminalContent = document.getElementById('terminal-content');
+        
+        const errorMessages = [
+            { text: '[SYSTEM] Initializing BodaBox Media Server...', class: 'error-green' },
+            { text: '[INFO] Checking system components...', class: '' },
+            { text: '[LOG] Mounting media drives...', class: '' },
+            { text: '[WARN] Disk I/O performance degraded on /dev/sdb1', class: 'error-yellow' },
+            { text: '[INFO] Starting network services...', class: '' },
+            { text: '[ERROR] Failed to bind to port 8080 (Address already in use)', class: 'error-red' },
+            { text: '[LOG] Retrying with alternative port...', class: '' },
+            { text: '[WARN] Using fallback configuration', class: 'error-yellow' },
+            { text: '[ERROR] Unable to initialize database connection', class: 'error-red' },
+            { text: '[LOG] Attempting database recovery...', class: '' },
+            { text: '[ERROR] SQL error 1045: Access denied for user', class: 'error-red' },
+            { text: '[SYSTEM] Checking filesystem integrity...', class: 'error-green' },
+            { text: '[WARN] Filesystem corruption detected in media library', class: 'error-yellow' },
+            { text: '[LOG] Repairing damaged inodes...', class: '' },
+            { text: '[ERROR] Failed to repair: Input/output error', class: 'error-red' },
+            { text: '[SYSTEM] Memory allocation check...', class: 'error-green' },
+            { text: '[WARN] Memory leak detected in media scanner process', class: 'error-yellow' },
+            { text: '[ERROR] Segmentation fault at 0x7F56E400', class: 'error-red' },
+            { text: '[LOG] Core dumped', class: '' },
+            { text: '[SYSTEM] Attempting to recover session...', class: 'error-green' },
+            { text: '[ERROR] Exception caught: Null pointer dereference', class: 'error-red' },
+            { text: '[ERROR] Stack trace:', class: 'error-red' },
+            { text: '   at /usr/lib/bodabox/main.c:1423', class: '' },
+            { text: '   at /usr/lib/bodabox/http_handler.c:892', class: '' },
+            { text: '   at /usr/lib/bodabox/router.c:341', class: '' },
+            { text: '[SYSTEM] Checking requested URL...', class: 'error-green' },
+            { text: '[LOG] Requested path: ' + window.location.pathname, class: '' },
+            { text: '[ERROR] Resource not found', class: 'error-red' },
+            { text: '[ERROR] No matching route in configuration', class: 'error-red' },
+            { text: '[SYSTEM] Resource lookup failed with critical error', class: 'error-red' },
+            { text: '[FATAL] HTTP Status Code 404: Page Not Found', class: 'error-red' },
+            { text: '[SYSTEM] Loading error page...', class: 'error-green' },
+            { text: '[INFO] Initiating automatic recovery...', class: '' }
+        ];
+        
+        function showErrors() {
+            // Clear terminal
+            terminalContent.innerHTML = '';
+            
+            // Add each error message with delay
+            let delay = 0;
+            errorMessages.forEach((msg, index) => {
+                setTimeout(() => {
+                    const errorLine = document.createElement('div');
+                    errorLine.textContent = msg.text;
+                    errorLine.classList.add('error-line');
+                    if (msg.class) {
+                        errorLine.classList.add(msg.class);
+                    }
+                    terminalContent.appendChild(errorLine);
+                    
+                    // Auto-scroll to latest message
+                    terminalContent.scrollTop = terminalContent.scrollHeight;
+                    
+                    // Start countdown after the last message
+                    if (index === errorMessages.length - 1) {
+                        setTimeout(() => {
+                            startCountdown();
+                        }, 500);
+                    }
+                }, delay);
+                
+                // Variable delay for natural typing effect
+                delay += Math.floor(Math.random() * 50) + 30;
+            });
+        }
+        
+        function startCountdown() {
+            let count = 5;
+            
+            function addCountdownLine(number) {
+                const countLine = document.createElement('div');
+                countLine.classList.add('countdown-line');
+                countLine.textContent = `[SYSTEM] Redirecting in ${number} seconds...`;
+                terminalContent.appendChild(countLine);
+                terminalContent.scrollTop = terminalContent.scrollHeight;
+            }
+            
+            // Add initial countdown line
+            addCountdownLine(count);
+            
+            // Set up interval for remaining counts
+            const countdownInterval = setInterval(() => {
+                count--;
+                if (count <= 0) {
+                    clearInterval(countdownInterval);
+                    window.location.href = '/';
+                } else {
+                    addCountdownLine(count);
+                }
+            }, 1000);
+        }
+        
+        // Start displaying errors when page loads
+        window.onload = showErrors;
+    </script>
+</body>
+</html>
